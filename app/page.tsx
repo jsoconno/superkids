@@ -58,7 +58,7 @@ export default function LandingPage() {
               onClick={() => router.push('/dashboard')}
             >
               <PlayCircle className="w-5 h-5" />
-              Let's Play!
+              Let&apos;s Play!
             </Button>
           ) : (
             <Button

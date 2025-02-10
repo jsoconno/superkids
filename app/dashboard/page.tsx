@@ -89,7 +89,7 @@ function DashboardContent() {
         <main className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-4xl font-bold">
-                    {selectedKid.name}'s Activities
+                    {selectedKid.name}&apos;s Activities
                 </h1>
                 <Button variant="outline" onClick={() => router.push('/kids')}>
                     <Users className="mr-2 h-4 w-4" />

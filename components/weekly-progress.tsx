@@ -35,7 +35,7 @@ export function WeeklyProgress({ kid, selectedDate }: WeeklyProgressProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>This Week's Progress</CardTitle>
+                <CardTitle>This Week&apos;s Progress</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">

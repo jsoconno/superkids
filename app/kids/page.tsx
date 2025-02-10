@@ -71,7 +71,7 @@ function KidsPageContent() {
                 ) : (
                     <div className="text-center max-w-2xl">
                         <p className="text-muted-foreground mb-4">
-                            Select a super kid's card to view their activities, or add another super kid to your team. Each super kid gets their own set of exciting daily activities!
+                            Select a super kid&apos;s card to view their activities, or add another super kid to your team. Each super kid gets their own set of exciting daily activities!
                         </p>
                         <div className="flex justify-center gap-4">
                             <Button
