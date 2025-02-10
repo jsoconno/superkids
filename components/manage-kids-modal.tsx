@@ -14,18 +14,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Gender } from "@/types/kids"
+import { HeroType } from "@/types/kids"
+import { ColorPicker, AVATAR_COLORS } from "@/components/ui/color-picker"
+import { z } from "zod"
 
 interface ManageKidsModalProps {
   isOpen: boolean
   onClose: () => void
-  onAddKid: (name: string, birthday: Date, gender: Gender) => void
+  onAddKid: (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
 }
 
 export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalProps) {
   const [newKidName, setNewKidName] = useState("")
   const [newKidBirthday, setNewKidBirthday] = useState<Date | undefined>(undefined)
-  const [newKidGender, setNewKidGender] = useState<Gender>("male")
+  const [newKidHeroType, setNewKidHeroType] = useState<HeroType>("super_boy")
+  const [newKidColor, setNewKidColor] = useState(AVATAR_COLORS[0].value)
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
 
   const years = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) => 1990 + i)
@@ -45,11 +48,12 @@ export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalPr
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (newKidName.trim() && newKidBirthday && newKidGender) {
-      onAddKid(newKidName.trim(), newKidBirthday, newKidGender)
+    if (newKidName.trim() && newKidBirthday && newKidHeroType) {
+      onAddKid(newKidName.trim(), newKidBirthday, newKidHeroType, newKidColor)
       setNewKidName("")
       setNewKidBirthday(undefined)
-      setNewKidGender("male")
+      setNewKidHeroType("super_boy")
+      setNewKidColor(AVATAR_COLORS[0].value)
       onClose()
     }
   }
@@ -72,19 +76,23 @@ export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalPr
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="gender">Gender</Label>
+              <Label htmlFor="hero_type">Hero Type</Label>
               <Select
-                value={newKidGender}
-                onValueChange={(value: Gender) => setNewKidGender(value)}
+                value={newKidHeroType}
+                onValueChange={(value: HeroType) => setNewKidHeroType(value)}
               >
-                <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select gender" />
+                <SelectTrigger id="hero_type">
+                  <SelectValue placeholder="Select hero type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="super_boy">Super Boy</SelectItem>
+                  <SelectItem value="super_girl">Super Girl</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label>Avatar Color</Label>
+              <ColorPicker value={newKidColor} onChange={setNewKidColor} />
             </div>
             <div className="grid gap-2">
               <Label>Birthday</Label>

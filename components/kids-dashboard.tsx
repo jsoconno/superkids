@@ -7,6 +7,14 @@ import { EditKidModal } from "@/components/edit-kid-modal"
 import { useState } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 // Function to get initials from name
 function getInitials(name: string) {
@@ -19,9 +27,10 @@ function getInitials(name: string) {
 }
 
 // Function to get avatar URL
-function getAvatarUrl(name: string) {
+function getAvatarUrl(name: string, backgroundColor: string) {
     const seed = name.toLowerCase().replace(/\s+/g, '-')
-    return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9&radius=50`
+    console.log('Avatar URL generation:', { name, backgroundColor, seed })
+    return `https://api.dicebear.com/7.x/lorelei/svg?seed=${seed}&backgroundColor=${backgroundColor}&backgroundType=solid&radius=50&scale=90`
 }
 
 interface KidsDashboardProps {
@@ -29,7 +38,7 @@ interface KidsDashboardProps {
     onDeleteKid: (kidId: number) => void
     onAddKid: () => void
     onSelectKid: (kidId: number) => void
-    onUpdateKid: (id: number, name: string, birthday: Date, gender: Gender) => void
+    onUpdateKid: (id: number, name: string, birthday: Date, gender: Gender, backgroundColor: string) => void
     selectedKid: number | null
     selectedDate: Date
 }
@@ -44,6 +53,7 @@ export function KidsDashboard({
     selectedDate
 }: KidsDashboardProps) {
     const [editingKid, setEditingKid] = useState<Kid | null>(null)
+    const [deletingKid, setDeletingKid] = useState<Kid | null>(null)
 
     const getTotalActivitiesCompleted = (kid: Kid) => {
         return Object.values(kid.completedActivities).flat().length
@@ -51,6 +61,17 @@ export function KidsDashboard({
 
     const getAge = (birthday: Date) => {
         return differenceInYears(new Date(), birthday)
+    }
+
+    const handleDelete = (kid: Kid) => {
+        setDeletingKid(kid)
+    }
+
+    const confirmDelete = () => {
+        if (deletingKid) {
+            onDeleteKid(deletingKid.id)
+            setDeletingKid(null)
+        }
     }
 
     return (
@@ -77,8 +98,13 @@ export function KidsDashboard({
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-12 w-12">
                                         <AvatarImage
-                                            src={getAvatarUrl(kid.name)}
+                                            src={getAvatarUrl(kid.name, kid.backgroundColor)}
                                             alt={kid.name}
+                                            onError={(e) => {
+                                                console.error('Avatar image error:', e)
+                                                const target = e.target as HTMLImageElement
+                                                console.log('Failed URL:', target.src)
+                                            }}
                                         />
                                         <AvatarFallback>{getInitials(kid.name)}</AvatarFallback>
                                     </Avatar>
@@ -107,27 +133,48 @@ export function KidsDashboard({
                                     Edit
                                 </Button>
                                 <Button
-                                    variant="destructive"
+                                    variant="outline"
                                     size="sm"
                                     onClick={(e) => {
                                         e.stopPropagation()
-                                        onDeleteKid(kid.id)
+                                        handleDelete(kid)
                                     }}
+                                    className="text-destructive hover:text-destructive-foreground hover:bg-destructive"
                                 >
                                     <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete
+                                    Remove
                                 </Button>
                             </CardFooter>
                         </Card>
                     )
                 })}
             </div>
+
             <EditKidModal
                 isOpen={editingKid !== null}
                 onClose={() => setEditingKid(null)}
                 onUpdateKid={onUpdateKid}
                 kid={editingKid}
             />
+
+            <Dialog open={deletingKid !== null} onOpenChange={() => setDeletingKid(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Remove Super Kid</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to remove {deletingKid?.name} from your team? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeletingKid(null)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={confirmDelete}>
+                            Remove Super Kid
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 } 

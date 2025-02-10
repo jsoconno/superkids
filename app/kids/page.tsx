@@ -18,25 +18,29 @@ function KidsPageContent() {
     // Get the selected kid from URL params or localStorage
     const selectedKidId = searchParams.get('kid')
         ? parseInt(searchParams.get('kid')!)
-        : localStorage.getItem('lastSelectedKid')
-            ? parseInt(localStorage.getItem('lastSelectedKid')!)
+        : typeof window !== 'undefined' && window.localStorage.getItem('lastSelectedKid')
+            ? parseInt(window.localStorage.getItem('lastSelectedKid')!)
             : null
 
-    const handleAddKid = (name: string, birthday: Date, gender: Gender) => {
-        addKid(name, birthday, gender)
+    const handleAddKid = (name: string, birthday: Date, gender: Gender, backgroundColor: string) => {
+        addKid(name, birthday, gender, backgroundColor)
         // After adding a kid, redirect to their dashboard
         const newKidId = kids.length + 1 // Since we know the new kid will have this ID
-        localStorage.setItem('lastSelectedKid', newKidId.toString())
+        if (typeof window !== 'undefined') {
+            window.localStorage.setItem('lastSelectedKid', newKidId.toString())
+        }
         router.push(`/dashboard?kid=${newKidId}`)
     }
 
     const handleSelectKid = (kidId: number) => {
-        localStorage.setItem('lastSelectedKid', kidId.toString())
+        if (typeof window !== 'undefined') {
+            window.localStorage.setItem('lastSelectedKid', kidId.toString())
+        }
         router.push(`/dashboard?kid=${kidId}`)
     }
 
-    const handleUpdateKid = (id: number, name: string, birthday: Date, gender: Gender) => {
-        updateKid(id, name, birthday, gender)
+    const handleUpdateKid = (id: number, name: string, birthday: Date, gender: Gender, backgroundColor: string) => {
+        updateKid(id, name, birthday, gender, backgroundColor)
     }
 
     return (

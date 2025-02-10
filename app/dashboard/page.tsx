@@ -22,41 +22,47 @@ function DashboardContent() {
     // Get selected kid from URL params or localStorage
     const selectedKidId = searchParams.get('kid')
         ? parseInt(searchParams.get('kid')!)
-        : localStorage.getItem('lastSelectedKid')
-            ? parseInt(localStorage.getItem('lastSelectedKid')!)
+        : typeof window !== 'undefined' && window.localStorage.getItem('lastSelectedKid')
+            ? parseInt(window.localStorage.getItem('lastSelectedKid')!)
             : null
 
     const selectedKid = kids.find(k => k.id === selectedKidId)
 
     // Load last selected date from localStorage on mount
     useEffect(() => {
-        const savedDate = localStorage.getItem('lastSelectedDate')
-        if (savedDate) {
-            setSelectedDate(parseISO(savedDate))
+        if (typeof window !== 'undefined') {
+            const savedDate = window.localStorage.getItem('lastSelectedDate')
+            if (savedDate) {
+                setSelectedDate(parseISO(savedDate))
+            }
         }
     }, [])
 
     // Save selected date to localStorage whenever it changes
     useEffect(() => {
-        localStorage.setItem('lastSelectedDate', format(selectedDate, "yyyy-MM-dd"))
+        if (typeof window !== 'undefined') {
+            window.localStorage.setItem('lastSelectedDate', format(selectedDate, "yyyy-MM-dd"))
+        }
     }, [selectedDate])
 
     // Redirect to /kids if no kids exist or no kid is selected
     useEffect(() => {
         if (kids.length === 0 || (!selectedKidId && kids.length > 0)) {
-            const lastSelectedKid = localStorage.getItem('lastSelectedKid')
-            if (lastSelectedKid && kids.some(k => k.id === parseInt(lastSelectedKid))) {
-                router.push(`/dashboard?kid=${lastSelectedKid}`)
-            } else {
-                router.push('/kids')
+            if (typeof window !== 'undefined') {
+                const lastSelectedKid = window.localStorage.getItem('lastSelectedKid')
+                if (lastSelectedKid && kids.some(k => k.id === parseInt(lastSelectedKid))) {
+                    router.push(`/dashboard?kid=${lastSelectedKid}`)
+                } else {
+                    router.push('/kids')
+                }
             }
         }
     }, [selectedKidId, kids, router])
 
     // Save selected kid to localStorage whenever it changes
     useEffect(() => {
-        if (selectedKidId) {
-            localStorage.setItem('lastSelectedKid', selectedKidId.toString())
+        if (selectedKidId && typeof window !== 'undefined') {
+            window.localStorage.setItem('lastSelectedKid', selectedKidId.toString())
         }
     }, [selectedKidId])
 

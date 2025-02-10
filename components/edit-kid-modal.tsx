@@ -12,19 +12,21 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Kid, Gender } from "@/types/kids"
+import { Kid, HeroType } from "@/types/kids"
+import { ColorPicker, AVATAR_COLORS } from "@/components/ui/color-picker"
 
 interface EditKidModalProps {
     isOpen: boolean
     onClose: () => void
-    onUpdateKid: (id: number, name: string, birthday: Date, gender: Gender) => void
+    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
     kid: Kid | null
 }
 
 export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModalProps) {
     const [kidName, setKidName] = useState("")
     const [kidBirthday, setKidBirthday] = useState<Date | undefined>(undefined)
-    const [kidGender, setKidGender] = useState<Gender>("male")
+    const [kidHeroType, setKidHeroType] = useState<HeroType>("super_boy")
+    const [kidColor, setKidColor] = useState(AVATAR_COLORS[0].value)
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
 
     const years = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) => 1990 + i)
@@ -38,7 +40,8 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
         if (kid) {
             setKidName(kid.name)
             setKidBirthday(kid.birthday)
-            setKidGender(kid.gender)
+            setKidHeroType(kid.hero_type)
+            setKidColor(kid.backgroundColor)
             setCurrentMonth(kid.birthday)
         }
     }, [kid])
@@ -54,8 +57,14 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (kid && kidName.trim() && kidBirthday && kidGender) {
-            onUpdateKid(kid.id, kidName.trim(), kidBirthday, kidGender)
+        if (kid && kidName.trim() && kidBirthday && kidHeroType) {
+            onUpdateKid(
+                kid.id,
+                kidName.trim(),
+                kidBirthday,
+                kidHeroType,
+                kidColor
+            )
             onClose()
         }
     }
@@ -80,19 +89,23 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="gender">Gender</Label>
+                            <Label htmlFor="hero_type">Hero Type</Label>
                             <Select
-                                value={kidGender}
-                                onValueChange={(value: Gender) => setKidGender(value)}
+                                value={kidHeroType}
+                                onValueChange={(value: HeroType) => setKidHeroType(value)}
                             >
-                                <SelectTrigger id="gender">
-                                    <SelectValue placeholder="Select gender" />
+                                <SelectTrigger id="hero_type">
+                                    <SelectValue placeholder="Select hero type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
+                                    <SelectItem value="super_boy">Super Boy</SelectItem>
+                                    <SelectItem value="super_girl">Super Girl</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Avatar Color</Label>
+                            <ColorPicker value={kidColor} onChange={setKidColor} />
                         </div>
                         <div className="grid gap-2">
                             <Label>Birthday</Label>
