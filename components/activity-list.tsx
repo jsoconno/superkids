@@ -4,6 +4,8 @@ import { format, isToday, isTomorrow, isFuture } from "date-fns"
 import { SuperheroActivity } from "@/types/activities"
 import { Check, RotateCcw } from "lucide-react"
 import confetti from 'canvas-confetti'
+import { ActivityTimer } from "@/components/activity-timer"
+import { useState } from "react"
 
 // Function to trigger confetti
 const triggerConfetti = () => {
@@ -60,6 +62,8 @@ interface ActivityListProps {
 }
 
 export function ActivityList({ activities = [], completedActivities = [], onToggle, selectedDate }: ActivityListProps) {
+  const [activeActivity, setActiveActivity] = useState<number | null>(null)
+
   const getDateDisplay = (date: Date) => {
     if (isToday(date)) return "today"
     if (isTomorrow(date)) return "tomorrow"
@@ -71,6 +75,17 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
     // Only trigger confetti when completing an activity for today (not when uncompleting)
     if (!completedActivities.includes(activityId) && isToday(selectedDate)) {
       triggerConfetti()
+    }
+  }
+
+  const handleStartActivity = (activityId: number) => {
+    setActiveActivity(activityId)
+  }
+
+  const handleFinishActivity = (activityId: number) => {
+    setActiveActivity(null)
+    if (!completedActivities.includes(activityId)) {
+      handleToggle(activityId)
     }
   }
 
@@ -90,6 +105,7 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
       <h2 className="text-2xl font-semibold mb-4">Activities for {getDateDisplay(selectedDate)}</h2>
       {activities.map((activity) => {
         const isCompleted = Array.isArray(completedActivities) && completedActivities.includes(activity.id)
+        const isActive = activeActivity === activity.id
         return (
           <Card key={activity.id}>
             <CardHeader>
@@ -103,25 +119,27 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <Button
-                    variant={isCompleted ? "outline" : "default"}
-                    onClick={() => handleToggle(activity.id)}
-                    className="min-w-[140px]"
-                    size="sm"
-                    disabled={isFutureDate}
-                  >
-                    {isCompleted ? (
-                      <>
-                        <RotateCcw className="w-4 h-4 mr-2" />
-                        Reset Activity
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-4 h-4 mr-2" />
-                        Complete Activity
-                      </>
-                    )}
-                  </Button>
+                  {!isActive && (
+                    <Button
+                      variant={isCompleted ? "outline" : "default"}
+                      onClick={() => isCompleted ? handleToggle(activity.id) : handleStartActivity(activity.id)}
+                      className="min-w-[140px]"
+                      size="sm"
+                      disabled={isFutureDate}
+                    >
+                      {isCompleted ? (
+                        <>
+                          <RotateCcw className="w-4 h-4 mr-2" />
+                          Reset Activity
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          Start Activity
+                        </>
+                      )}
+                    </Button>
+                  )}
                   {isFutureDate && (
                     <p className="text-xs text-muted-foreground">
                       Activities can only be completed on or after their scheduled date
@@ -129,6 +147,14 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
                   )}
                 </div>
               </div>
+              {isActive && (
+                <div className="mt-4">
+                  <ActivityTimer
+                    duration={activity.duration}
+                    onComplete={() => handleFinishActivity(activity.id)}
+                  />
+                </div>
+              )}
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Hero Section */}
@@ -139,7 +165,7 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
                   <p className="text-sm mb-2">{activity.hero.heroBackstory}</p>
                 )}
                 {activity.hero.heroMotto && (
-                  <p className="text-sm italic">"{activity.hero.heroMotto}"</p>
+                  <p className="text-sm italic">&ldquo;{activity.hero.heroMotto}&rdquo;</p>
                 )}
               </div>
 
