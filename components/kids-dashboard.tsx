@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2, Pencil } from "lucide-react"
-import { format, startOfWeek, getWeek, differenceInYears } from "date-fns"
-import { Kid, Gender } from "@/types/kids"
+import { PlusCircle, Trash2, Pencil, Cake } from "lucide-react"
+import { format, startOfWeek, getWeek, differenceInYears, differenceInMonths } from "date-fns"
+import { Kid, HeroType } from "@/types/kids"
 import { EditKidModal } from "@/components/edit-kid-modal"
 import { useState } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -15,6 +15,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import React from "react"
 
 // Function to get initials from name
 function getInitials(name: string) {
@@ -33,12 +39,18 @@ function getAvatarUrl(name: string, backgroundColor: string) {
     return `https://api.dicebear.com/7.x/lorelei/svg?seed=${seed}&backgroundColor=${backgroundColor}&backgroundType=solid&radius=50&scale=90`
 }
 
+// Function to get age display
+function getAgeDisplay(birthday: Date) {
+    const years = differenceInYears(new Date(), birthday)
+    return `${years} year${years !== 1 ? 's' : ''} old`
+}
+
 interface KidsDashboardProps {
     kids: Kid[]
     onDeleteKid: (kidId: number) => void
     onAddKid: () => void
     onSelectKid: (kidId: number) => void
-    onUpdateKid: (id: number, name: string, birthday: Date, gender: Gender, backgroundColor: string) => void
+    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
     selectedKid: number | null
     selectedDate: Date
 }
@@ -54,6 +66,21 @@ export function KidsDashboard({
 }: KidsDashboardProps) {
     const [editingKid, setEditingKid] = useState<Kid | null>(null)
     const [deletingKid, setDeletingKid] = useState<Kid | null>(null)
+    const [openPopoverId, setOpenPopoverId] = useState<number | null>(null)
+    const popoverTimerRef = React.useRef<NodeJS.Timeout>()
+
+    const handleMouseEnter = (kidId: number) => {
+        popoverTimerRef.current = setTimeout(() => {
+            setOpenPopoverId(kidId)
+        }, 1000)
+    }
+
+    const handleMouseLeave = () => {
+        if (popoverTimerRef.current) {
+            clearTimeout(popoverTimerRef.current)
+        }
+        setOpenPopoverId(null)
+    }
 
     const getTotalActivitiesCompleted = (kid: Kid) => {
         return Object.values(kid.completedActivities).flat().length
@@ -108,18 +135,41 @@ export function KidsDashboard({
                                         />
                                         <AvatarFallback>{getInitials(kid.name)}</AvatarFallback>
                                     </Avatar>
-                                    <CardTitle className={cn(
-                                        isSelected && "text-primary"
-                                    )}>
-                                        {kid.name} (Age: {getAge(kid.birthday)})
-                                    </CardTitle>
+                                    <div className="flex-grow">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <CardTitle className={cn(
+                                                "text-lg",
+                                                isSelected && "text-primary"
+                                            )}>
+                                                {kid.name}
+                                            </CardTitle>
+                                            <div className="text-sm text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                                                {getAgeDisplay(kid.birthday)}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Popover open={openPopoverId === kid.id}>
+                                                <PopoverTrigger asChild>
+                                                    <span
+                                                        className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                                                        onMouseEnter={() => handleMouseEnter(kid.id)}
+                                                        onMouseLeave={handleMouseLeave}
+                                                    >
+                                                        {getTotalActivitiesCompleted(kid)} activities completed
+                                                    </span>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-2"
+                                                    onMouseEnter={() => setOpenPopoverId(kid.id)}
+                                                    onMouseLeave={handleMouseLeave}
+                                                >
+                                                    <p className="text-sm">Total activities completed</p>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
+                                    </div>
                                 </div>
                             </CardHeader>
-                            <CardContent className="flex-grow">
-                                <p className="text-muted-foreground">
-                                    Total activities completed: {getTotalActivitiesCompleted(kid)}
-                                </p>
-                            </CardContent>
                             <CardFooter className="justify-end space-x-2">
                                 <Button
                                     variant="outline"
