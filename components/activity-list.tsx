@@ -3,6 +3,53 @@ import { Button } from "@/components/ui/button"
 import { format, isToday, isTomorrow, isFuture } from "date-fns"
 import { SuperheroActivity } from "@/types/activities"
 import { Check, RotateCcw } from "lucide-react"
+import confetti from 'canvas-confetti'
+
+// Function to trigger confetti
+const triggerConfetti = () => {
+  const count = 200
+  const defaults = {
+    origin: { y: 0.7 },
+    zIndex: 1000,
+  }
+
+  function fire(particleRatio: number, opts: confetti.Options) {
+    confetti({
+      ...defaults,
+      ...opts,
+      particleCount: Math.floor(count * particleRatio),
+      spread: 60,
+      startVelocity: 55,
+    })
+  }
+
+  fire(0.25, {
+    spread: 26,
+    startVelocity: 55,
+  })
+
+  fire(0.2, {
+    spread: 60,
+  })
+
+  fire(0.35, {
+    spread: 100,
+    decay: 0.91,
+    scalar: 0.8,
+  })
+
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 25,
+    decay: 0.92,
+    scalar: 1.2,
+  })
+
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 45,
+  })
+}
 
 interface ActivityListProps {
   activities: SuperheroActivity[]
@@ -17,6 +64,14 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
     if (isToday(date)) return "today"
     if (isTomorrow(date)) return "tomorrow"
     return format(date, "EEEE, MMMM do")
+  }
+
+  const handleToggle = (activityId: number) => {
+    onToggle(activityId)
+    // Only trigger confetti when completing an activity for today (not when uncompleting)
+    if (!completedActivities.includes(activityId) && isToday(selectedDate)) {
+      triggerConfetti()
+    }
   }
 
   if (!Array.isArray(activities) || activities.length === 0) {
@@ -50,7 +105,7 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
                 <div className="flex flex-col items-end gap-2">
                   <Button
                     variant={isCompleted ? "outline" : "default"}
-                    onClick={() => onToggle(activity.id)}
+                    onClick={() => handleToggle(activity.id)}
                     className="min-w-[140px]"
                     size="sm"
                     disabled={isFutureDate}
