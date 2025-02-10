@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { KidsDashboard } from "@/components/kids-dashboard"
 import { ManageKidsModal } from "@/components/manage-kids-modal"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -15,18 +15,23 @@ export default function KidsPage() {
     const searchParams = useSearchParams()
     const { kids, addKid, deleteKid, updateKid } = useKids()
 
-    // Get the selected kid from the URL params
-    const selectedKidId = searchParams.get('kid') ? parseInt(searchParams.get('kid')!) : null
-    const selectedKid = kids.find(k => k.id === selectedKidId)
+    // Get the selected kid from URL params or localStorage
+    const selectedKidId = searchParams.get('kid')
+        ? parseInt(searchParams.get('kid')!)
+        : localStorage.getItem('lastSelectedKid')
+            ? parseInt(localStorage.getItem('lastSelectedKid')!)
+            : null
 
     const handleAddKid = (name: string, birthday: Date, gender: Gender) => {
         addKid(name, birthday, gender)
         // After adding a kid, redirect to their dashboard
         const newKidId = kids.length + 1 // Since we know the new kid will have this ID
+        localStorage.setItem('lastSelectedKid', newKidId.toString())
         router.push(`/dashboard?kid=${newKidId}`)
     }
 
     const handleSelectKid = (kidId: number) => {
+        localStorage.setItem('lastSelectedKid', kidId.toString())
         router.push(`/dashboard?kid=${kidId}`)
     }
 
@@ -71,7 +76,10 @@ export default function KidsPage() {
                         <div className="flex justify-center gap-4">
                             <Button
                                 variant="outline"
-                                onClick={() => router.push('/dashboard')}
+                                onClick={() => {
+                                    const lastKid = localStorage.getItem('lastSelectedKid')
+                                    router.push(lastKid ? `/dashboard?kid=${lastKid}` : '/dashboard')
+                                }}
                                 className="gap-2"
                             >
                                 Return to Dashboard

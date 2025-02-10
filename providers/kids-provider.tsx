@@ -56,17 +56,25 @@ export function KidsProvider({ children }: { children: React.ReactNode }) {
     }, [kids, isInitialized])
 
     const addKid = (name: string, birthday: Date, gender: Gender) => {
-        setKids(prev => [...prev, {
-            id: prev.length + 1,
+        const newKid = {
+            id: kids.length + 1,
             name,
             birthday,
             gender,
             completedActivities: {}
-        }])
+        }
+        setKids(prev => [...prev, newKid])
+        // Set as last selected kid
+        localStorage.setItem('lastSelectedKid', newKid.id.toString())
     }
 
     const deleteKid = (id: number) => {
         setKids(prev => prev.filter(kid => kid.id !== id))
+        // If we're deleting the last selected kid, clear it
+        const lastSelectedKid = localStorage.getItem('lastSelectedKid')
+        if (lastSelectedKid && parseInt(lastSelectedKid) === id) {
+            localStorage.removeItem('lastSelectedKid')
+        }
     }
 
     const updateKidActivities = (kidId: number, date: string, activities: number[]) => {

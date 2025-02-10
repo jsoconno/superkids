@@ -19,10 +19,13 @@ export default function Dashboard() {
     const searchParams = useSearchParams()
     const { kids, updateKidActivities } = useKids()
 
-    // Get selected kid from URL or localStorage
+    // Get selected kid from URL params or localStorage
     const selectedKidId = searchParams.get('kid')
         ? parseInt(searchParams.get('kid')!)
-        : null
+        : localStorage.getItem('lastSelectedKid')
+            ? parseInt(localStorage.getItem('lastSelectedKid')!)
+            : null
+
     const selectedKid = kids.find(k => k.id === selectedKidId)
 
     // Load last selected date from localStorage on mount
