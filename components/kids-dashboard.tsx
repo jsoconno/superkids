@@ -59,8 +59,8 @@ export function KidsDashboard({
                     <Card
                         key={kid.id}
                         className={`cursor-pointer flex flex-col hover:border-primary/50 transition-colors ${selectedKid === kid.id
-                            ? 'ring-1 ring-primary border-primary'
-                            : 'hover:shadow-sm'
+                                ? 'ring-2 ring-primary border-primary'
+                                : 'hover:shadow-sm'
                             }`}
                         onClick={() => onSelectKid(kid.id)}
                     >
