@@ -1,4 +1,4 @@
-import { SuperheroActivity } from "@/data/superhero-activities"
+import { SuperheroActivity } from "@/types/activities"
 import { format, getDay, startOfMonth, differenceInDays } from "date-fns"
 
 export function getActivitiesForDate(date: Date, activities: SuperheroActivity[], kidAge: number): SuperheroActivity[] {

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import {
     Select,
     SelectContent,
@@ -28,6 +29,7 @@ interface FeedbackDialogProps {
 export function FeedbackDialog({ className, children }: FeedbackDialogProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [type, setType] = useState<"bug" | "feature">("bug")
+    const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -41,14 +43,15 @@ export function FeedbackDialog({ className, children }: FeedbackDialogProps) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    title: `[${type.toUpperCase()}] New ${type} report from user`,
+                    title: `[${type.toUpperCase()}] ${title}`,
                     body: description,
-                    labels: [type],
+                    labels: [type, "user-request"],
                 }),
             })
 
             if (response.ok) {
                 // Clear form and close dialog
+                setTitle("")
                 setDescription("")
                 setType("bug")
                 setIsOpen(false)
@@ -110,13 +113,24 @@ export function FeedbackDialog({ className, children }: FeedbackDialogProps) {
                         </Select>
                     </div>
                     <div className="space-y-2">
+                        <Label>Title</Label>
+                        <Input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder={type === "bug"
+                                ? "Brief description of the issue..."
+                                : "Name your feature suggestion..."
+                            }
+                        />
+                    </div>
+                    <div className="space-y-2">
                         <Label>Description</Label>
                         <Textarea
                             value={description}
                             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                             placeholder={type === "bug"
                                 ? "Please describe what happened and how to reproduce it..."
-                                : "Please describe your feature idea..."
+                                : "Please describe your feature idea in detail..."
                             }
                             className="min-h-[100px]"
                         />
@@ -132,7 +146,7 @@ export function FeedbackDialog({ className, children }: FeedbackDialogProps) {
                     </Button>
                     <Button
                         onClick={handleSubmit}
-                        disabled={!description.trim() || isSubmitting}
+                        disabled={!title.trim() || !description.trim() || isSubmitting}
                     >
                         {isSubmitting ? "Submitting..." : "Submit"}
                     </Button>
