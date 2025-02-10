@@ -22,15 +22,22 @@ function KidsPageContent() {
             ? parseInt(window.localStorage.getItem('lastSelectedKid')!)
             : null
 
-    const handleAddKid = (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
-        console.log('handleAddKid called with:', { name, hero_type, backgroundColor, avatarStyle })
-        addKid(name, birthday, hero_type, backgroundColor, avatarStyle)
-        // After adding a kid, redirect to their dashboard
-        const newKidId = kids.length + 1 // Since we know the new kid will have this ID
-        if (typeof window !== 'undefined') {
-            window.localStorage.setItem('lastSelectedKid', newKidId.toString())
+    const handleSaveKid = (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
+        if (editingKidId) {
+            // Update existing kid
+            updateKid(editingKidId, name, birthday, hero_type, backgroundColor, avatarStyle)
+            setEditingKidId(null)
+        } else {
+            // Add new kid
+            addKid(name, birthday, hero_type, backgroundColor, avatarStyle)
+            // After adding a kid, redirect to their dashboard
+            const newKidId = kids.length + 1 // Since we know the new kid will have this ID
+            if (typeof window !== 'undefined') {
+                window.localStorage.setItem('lastSelectedKid', newKidId.toString())
+            }
+            router.push(`/dashboard?kid=${newKidId}`)
         }
-        router.push(`/dashboard?kid=${newKidId}`)
+        setIsModalOpen(false)
     }
 
     const handleSelectKid = (kidId: number) => {
@@ -40,10 +47,8 @@ function KidsPageContent() {
         router.push(`/dashboard?kid=${kidId}`)
     }
 
-    const handleUpdateKid = (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
-        console.log('handleUpdateKid called with:', { id, name, hero_type, backgroundColor, avatarStyle })
-        updateKid(id, name, birthday, hero_type, backgroundColor, avatarStyle)
-    }
+    // Track which kid is being edited
+    const [editingKidId, setEditingKidId] = useState<number | null>(null)
 
     return (
         <main className="container mx-auto p-4">
@@ -91,16 +96,26 @@ function KidsPageContent() {
                     onDeleteKid={deleteKid}
                     onAddKid={() => setIsModalOpen(true)}
                     onSelectKid={handleSelectKid}
-                    onUpdateKid={handleUpdateKid}
+                    onUpdateKid={(name, birthday, hero_type, backgroundColor, avatarStyle) => {
+                        if (editingKidId) {
+                            updateKid(editingKidId, name, birthday, hero_type, backgroundColor, avatarStyle)
+                            setEditingKidId(null)
+                        }
+                    }}
                     selectedKid={selectedKidId}
                     selectedDate={new Date()}
+                    onEditKid={(kidId) => setEditingKidId(kidId)}
                 />
             )}
 
             <ManageKidsModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onAddKid={handleAddKid}
+                isOpen={isModalOpen || editingKidId !== null}
+                onClose={() => {
+                    setIsModalOpen(false)
+                    setEditingKidId(null)
+                }}
+                onSave={handleSaveKid}
+                kid={editingKidId ? kids.find(k => k.id === editingKidId) : undefined}
             />
         </main>
     )
@@ -108,7 +123,7 @@ function KidsPageContent() {
 
 export default function KidsPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <KidsPageContent />
         </Suspense>
     )

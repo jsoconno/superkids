@@ -24,26 +24,27 @@ interface ColorPickerProps {
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
     return (
         <div className="p-2">
-            <div className="grid grid-cols-10 gap-3">
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-3">
                 {AVATAR_COLORS.map((color) => (
-                    <button
-                        key={color.value}
-                        className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center transition-all",
-                            "ring-2 ring-offset-2",
-                            value === color.value
-                                ? "ring-primary"
-                                : "ring-transparent hover:ring-primary/50"
-                        )}
-                        style={{ backgroundColor: `#${color.value}` }}
-                        onClick={() => onChange(color.value)}
-                        type="button"
-                        title={color.label}
-                    >
-                        {value === color.value && (
-                            <Check className="h-4 w-4 text-white" />
-                        )}
-                    </button>
+                    <div key={color.value} className="aspect-square">
+                        <button
+                            className={cn(
+                                "w-full h-full rounded-full flex items-center justify-center transition-all",
+                                "ring-2 ring-offset-2",
+                                value === color.value
+                                    ? "ring-primary"
+                                    : "ring-transparent hover:ring-primary/50"
+                            )}
+                            style={{ backgroundColor: `#${color.value}` }}
+                            onClick={() => onChange(color.value)}
+                            type="button"
+                            title={color.label}
+                        >
+                            {value === color.value && (
+                                <Check className="h-4 w-4 text-white" />
+                            )}
+                        </button>
+                    </div>
                 ))}
             </div>
         </div>

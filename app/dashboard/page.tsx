@@ -127,7 +127,7 @@ function DashboardContent() {
 
 export default function Dashboard() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
             <DashboardContent />
         </Suspense>
     )

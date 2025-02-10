@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle, Trash2, Pencil, Cake } from "lucide-react"
 import { format, startOfWeek, getWeek, differenceInYears, differenceInMonths } from "date-fns"
 import { Kid, HeroType, AvatarStyle } from "@/types/kids"
-import { EditKidModal } from "@/components/edit-kid-modal"
+import { ManageKidsModal } from "@/components/manage-kids-modal"
 import { useState } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
@@ -48,9 +48,10 @@ interface KidsDashboardProps {
     onDeleteKid: (kidId: number) => void
     onAddKid: () => void
     onSelectKid: (kidId: number) => void
-    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
+    onUpdateKid: (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
     selectedKid: number | null
     selectedDate: Date
+    onEditKid: (kidId: number) => void
 }
 
 export function KidsDashboard({
@@ -60,7 +61,8 @@ export function KidsDashboard({
     onSelectKid,
     onUpdateKid,
     selectedKid,
-    selectedDate
+    selectedDate,
+    onEditKid
 }: KidsDashboardProps) {
     const [editingKid, setEditingKid] = useState<Kid | null>(null)
     const [deletingKid, setDeletingKid] = useState<Kid | null>(null)
@@ -174,7 +176,7 @@ export function KidsDashboard({
                                     size="sm"
                                     onClick={(e) => {
                                         e.stopPropagation()
-                                        setEditingKid(kid)
+                                        onEditKid(kid.id)
                                     }}
                                 >
                                     <Pencil className="w-4 h-4 mr-2" />
@@ -198,11 +200,16 @@ export function KidsDashboard({
                 })}
             </div>
 
-            <EditKidModal
+            <ManageKidsModal
                 isOpen={editingKid !== null}
                 onClose={() => setEditingKid(null)}
-                onUpdateKid={onUpdateKid}
-                kid={editingKid}
+                onSave={(name, birthday, hero_type, backgroundColor, avatarStyle) => {
+                    if (editingKid) {
+                        onUpdateKid(name, birthday, hero_type, backgroundColor, avatarStyle)
+                    }
+                    setEditingKid(null)
+                }}
+                kid={editingKid || undefined}
             />
 
             <Dialog open={deletingKid !== null} onOpenChange={() => setDeletingKid(null)}>

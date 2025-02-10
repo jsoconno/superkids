@@ -39,35 +39,36 @@ export function AvatarStylePicker({ value, onChange, backgroundColor }: AvatarSt
     }
 
     return (
-        <div className="max-h-[300px] overflow-y-auto p-2">
-            <div className="grid grid-cols-10 gap-3">
+        <div className="p-2">
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-3">
                 {AVATAR_STYLES.map((style) => (
-                    <button
-                        key={style.value}
-                        className={cn(
-                            "relative rounded-full transition-all",
-                            "ring-2 ring-offset-2",
-                            value === style.value
-                                ? "ring-primary"
-                                : "ring-transparent hover:ring-primary/50"
-                        )}
-                        onClick={() => onChange(style.value)}
-                        type="button"
-                        title={style.label}
-                    >
-                        <Avatar className="h-10 w-10">
-                            <AvatarImage
-                                src={getAvatarUrl(style.value)}
-                                alt={style.label}
-                            />
-                            <AvatarFallback>{style.label.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
-                        {value === style.value && (
-                            <div className="absolute inset-0 rounded-full bg-primary/10 flex items-center justify-center">
-                                <Check className="h-4 w-4 text-primary" />
-                            </div>
-                        )}
-                    </button>
+                    <div key={style.value} className="aspect-square">
+                        <button
+                            className={cn(
+                                "relative w-full h-full rounded-full transition-all",
+                                "ring-2 ring-offset-2",
+                                value === style.value
+                                    ? "ring-primary"
+                                    : "ring-transparent hover:ring-primary/50"
+                            )}
+                            onClick={() => onChange(style.value)}
+                            type="button"
+                            title={style.label}
+                        >
+                            <Avatar className="h-full w-full">
+                                <AvatarImage
+                                    src={getAvatarUrl(style.value)}
+                                    alt={style.label}
+                                />
+                                <AvatarFallback>{style.label.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
+                            {value === style.value && (
+                                <div className="absolute inset-0 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Check className="h-4 w-4 text-primary" />
+                                </div>
+                            )}
+                        </button>
+                    </div>
                 ))}
             </div>
         </div>
