@@ -90,12 +90,12 @@ export function ManageKidsModal({ isOpen, onClose, onSave, kid }: ManageKidsModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl">{kid ? 'Edit' : 'Add'} Super Kid</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} id="kid-form">
-          <div className="grid gap-6 py-4">
+        <form onSubmit={handleSubmit} id="kid-form" className="flex-1 overflow-y-auto">
+          <div className="grid gap-6 py-4 px-1">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
@@ -191,7 +191,7 @@ export function ManageKidsModal({ isOpen, onClose, onSave, kid }: ManageKidsModa
             </div>
           </div>
         </form>
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0">
           <Button
             type="submit"
             form="kid-form"
