@@ -57,7 +57,7 @@ export default function KidsPage() {
                 {kids.length === 0 ? (
                     <div className="text-center max-w-2xl">
                         <p className="text-xl text-muted-foreground mb-6">
-                            Get started by adding your first super kid! Create a profile for each child to track their daily superhero activities and achievements.
+                            Get started by adding your first super kid! Create a profile for each child to track their daily superhero activities and achievements!
                         </p>
                         <Button
                             size="lg"
