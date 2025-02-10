@@ -7,7 +7,7 @@ import { ProgressChart } from "@/components/progress-chart"
 import { format, differenceInYears, getDay, parseISO } from "date-fns"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Users } from "lucide-react"
+import { Users, ArrowLeft } from "lucide-react"
 import { useKids } from "@/providers/kids-provider"
 import { superheroActivities } from "@/data/superhero-activities"
 import { getActivitiesForDate } from "@/utils/activity-utils"
@@ -97,9 +97,9 @@ function DashboardContent() {
                 <h1 className="text-4xl font-bold">
                     {selectedKid.name}&apos;s Activities
                 </h1>
-                <Button variant="outline" onClick={() => router.push('/kids')}>
-                    <Users className="mr-2 h-4 w-4" />
-                    Manage Kids
+                <Button variant="ghost" onClick={() => router.push('/kids')}>
+                    Manage Super Kids
+                    <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
                 </Button>
             </div>
 

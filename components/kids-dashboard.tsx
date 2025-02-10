@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button"
 import { PlusCircle, Trash2, Pencil, Cake } from "lucide-react"
 import { format, startOfWeek, getWeek, differenceInYears, differenceInMonths } from "date-fns"
-import { Kid, HeroType } from "@/types/kids"
+import { Kid, HeroType, AvatarStyle } from "@/types/kids"
 import { EditKidModal } from "@/components/edit-kid-modal"
 import { useState } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -33,10 +33,8 @@ function getInitials(name: string) {
 }
 
 // Function to get avatar URL
-function getAvatarUrl(name: string, backgroundColor: string) {
-    const seed = name.toLowerCase().replace(/\s+/g, '-')
-    console.log('Avatar URL generation:', { name, backgroundColor, seed })
-    return `https://api.dicebear.com/7.x/lorelei/svg?seed=${seed}&backgroundColor=${backgroundColor}&backgroundType=solid&radius=50&scale=90`
+function getAvatarUrl(name: string, backgroundColor: string, avatarStyle: string) {
+    return `https://api.dicebear.com/7.x/lorelei/svg?seed=${avatarStyle}&backgroundColor=${backgroundColor}&backgroundType=solid&radius=50&scale=90`
 }
 
 // Function to get age display
@@ -50,7 +48,7 @@ interface KidsDashboardProps {
     onDeleteKid: (kidId: number) => void
     onAddKid: () => void
     onSelectKid: (kidId: number) => void
-    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
+    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
     selectedKid: number | null
     selectedDate: Date
 }
@@ -125,7 +123,7 @@ export function KidsDashboard({
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-12 w-12">
                                         <AvatarImage
-                                            src={getAvatarUrl(kid.name, kid.backgroundColor)}
+                                            src={getAvatarUrl(kid.name, kid.backgroundColor, kid.avatarStyle)}
                                             alt={kid.name}
                                             onError={(e) => {
                                                 console.error('Avatar image error:', e)

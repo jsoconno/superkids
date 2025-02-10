@@ -5,7 +5,7 @@ import { KidsDashboard } from "@/components/kids-dashboard"
 import { ManageKidsModal } from "@/components/manage-kids-modal"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useKids } from "@/providers/kids-provider"
-import { Gender } from "@/types/kids"
+import { HeroType, AvatarStyle } from "@/types/kids"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, ArrowLeft } from "lucide-react"
 
@@ -22,8 +22,9 @@ function KidsPageContent() {
             ? parseInt(window.localStorage.getItem('lastSelectedKid')!)
             : null
 
-    const handleAddKid = (name: string, birthday: Date, gender: Gender, backgroundColor: string) => {
-        addKid(name, birthday, gender, backgroundColor)
+    const handleAddKid = (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
+        console.log('handleAddKid called with:', { name, hero_type, backgroundColor, avatarStyle })
+        addKid(name, birthday, hero_type, backgroundColor, avatarStyle)
         // After adding a kid, redirect to their dashboard
         const newKidId = kids.length + 1 // Since we know the new kid will have this ID
         if (typeof window !== 'undefined') {
@@ -39,8 +40,9 @@ function KidsPageContent() {
         router.push(`/dashboard?kid=${kidId}`)
     }
 
-    const handleUpdateKid = (id: number, name: string, birthday: Date, gender: Gender, backgroundColor: string) => {
-        updateKid(id, name, birthday, gender, backgroundColor)
+    const handleUpdateKid = (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
+        console.log('handleUpdateKid called with:', { id, name, hero_type, backgroundColor, avatarStyle })
+        updateKid(id, name, birthday, hero_type, backgroundColor, avatarStyle)
     }
 
     return (
@@ -49,10 +51,10 @@ function KidsPageContent() {
                 <Button
                     variant="ghost"
                     className="mb-4"
-                    onClick={() => router.push('/')}
+                    onClick={() => router.push('/dashboard')}
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Home
+                    Back to Activities
                 </Button>
             )}
 
@@ -77,25 +79,13 @@ function KidsPageContent() {
                         <p className="text-muted-foreground mb-4">
                             Select a super kid&apos;s card to view their activities, or add another super kid to your team. Each super kid gets their own set of exciting daily activities!
                         </p>
-                        <div className="flex justify-center gap-4">
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    const lastKid = localStorage.getItem('lastSelectedKid')
-                                    router.push(lastKid ? `/dashboard?kid=${lastKid}` : '/dashboard')
-                                }}
-                                className="gap-2"
-                            >
-                                Return to Dashboard
-                            </Button>
-                            <Button
-                                onClick={() => setIsModalOpen(true)}
-                                className="gap-2"
-                            >
-                                <PlusCircle className="w-5 h-5" />
-                                Add Another Super Kid
-                            </Button>
-                        </div>
+                        <Button
+                            onClick={() => setIsModalOpen(true)}
+                            className="gap-2"
+                        >
+                            <PlusCircle className="w-5 h-5" />
+                            Add Another Super Kid
+                        </Button>
                     </div>
                 )}
             </div>

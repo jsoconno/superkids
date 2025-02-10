@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, getDay } from "date-fns"
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, getDay, isSameWeek } from "date-fns"
 import { Kid } from "@/types/kids"
 
 interface WeeklyProgressProps {
@@ -12,6 +12,7 @@ export function WeeklyProgress({ kid, selectedDate }: WeeklyProgressProps) {
     const weekStart = startOfWeek(selectedDate)
     const weekEnd = endOfWeek(selectedDate)
     const daysInWeek = eachDayOfInterval({ start: weekStart, end: weekEnd })
+    const isCurrentWeek = isSameWeek(selectedDate, new Date())
 
     // Get activities completed for each day this week
     const weeklyProgress = daysInWeek.map(day => {
@@ -35,7 +36,7 @@ export function WeeklyProgress({ kid, selectedDate }: WeeklyProgressProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>This Week&apos;s Progress</CardTitle>
+                <CardTitle>{isCurrentWeek ? "This Week's Progress" : "Selected Week's Progress"}</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">

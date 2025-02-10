@@ -14,14 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { HeroType } from "@/types/kids"
+import { HeroType, AvatarStyle } from "@/types/kids"
 import { ColorPicker, AVATAR_COLORS } from "@/components/ui/color-picker"
-import { z } from "zod"
+import { AvatarStylePicker, AVATAR_STYLES } from "@/components/ui/avatar-style-picker"
 
 interface ManageKidsModalProps {
   isOpen: boolean
   onClose: () => void
-  onAddKid: (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
+  onAddKid: (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
 }
 
 export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalProps) {
@@ -29,6 +29,7 @@ export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalPr
   const [newKidBirthday, setNewKidBirthday] = useState<Date | undefined>(undefined)
   const [newKidHeroType, setNewKidHeroType] = useState<HeroType>("super_boy")
   const [newKidColor, setNewKidColor] = useState(AVATAR_COLORS[0].value)
+  const [newKidAvatarStyle, setNewKidAvatarStyle] = useState<AvatarStyle>(AVATAR_STYLES[0].value)
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
 
   const years = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) => 1990 + i)
@@ -49,18 +50,19 @@ export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalPr
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (newKidName.trim() && newKidBirthday && newKidHeroType) {
-      onAddKid(newKidName.trim(), newKidBirthday, newKidHeroType, newKidColor)
+      onAddKid(newKidName.trim(), newKidBirthday, newKidHeroType, newKidColor, newKidAvatarStyle)
       setNewKidName("")
       setNewKidBirthday(undefined)
       setNewKidHeroType("super_boy")
       setNewKidColor(AVATAR_COLORS[0].value)
+      setNewKidAvatarStyle(AVATAR_STYLES[0].value)
       onClose()
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Add a New Super Kid</DialogTitle>
         </DialogHeader>
@@ -89,6 +91,14 @@ export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalPr
                   <SelectItem value="super_girl">Super Girl</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label>Avatar Style</Label>
+              <AvatarStylePicker
+                value={newKidAvatarStyle}
+                onChange={setNewKidAvatarStyle}
+                backgroundColor={newKidColor}
+              />
             </div>
             <div className="grid gap-2">
               <Label>Avatar Color</Label>
@@ -136,11 +146,6 @@ export function ManageKidsModal({ isOpen, onClose, onAddKid }: ManageKidsModalPr
                 onMonthChange={setCurrentMonth}
                 disabled={(date) => date > new Date()}
                 initialFocus
-                footer={newKidBirthday && (
-                  <p className="text-sm text-muted-foreground text-center">
-                    Selected: {format(newKidBirthday, "PPP")}
-                  </p>
-                )}
               />
             </div>
           </div>

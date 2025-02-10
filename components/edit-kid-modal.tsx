@@ -12,13 +12,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Kid, HeroType } from "@/types/kids"
+import { Kid, HeroType, AvatarStyle } from "@/types/kids"
 import { ColorPicker, AVATAR_COLORS } from "@/components/ui/color-picker"
+import { AvatarStylePicker, AVATAR_STYLES } from "@/components/ui/avatar-style-picker"
 
 interface EditKidModalProps {
     isOpen: boolean
     onClose: () => void
-    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
+    onUpdateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
     kid: Kid | null
 }
 
@@ -27,6 +28,7 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
     const [kidBirthday, setKidBirthday] = useState<Date | undefined>(undefined)
     const [kidHeroType, setKidHeroType] = useState<HeroType>("super_boy")
     const [kidColor, setKidColor] = useState(AVATAR_COLORS[0].value)
+    const [kidAvatarStyle, setKidAvatarStyle] = useState<AvatarStyle>(AVATAR_STYLES[0].value)
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
 
     const years = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) => 1990 + i)
@@ -42,6 +44,7 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
             setKidBirthday(kid.birthday)
             setKidHeroType(kid.hero_type)
             setKidColor(kid.backgroundColor)
+            setKidAvatarStyle(kid.avatarStyle)
             setCurrentMonth(kid.birthday)
         }
     }, [kid])
@@ -58,12 +61,14 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (kid && kidName.trim() && kidBirthday && kidHeroType) {
+            console.log('Updating kid with avatar style:', kidAvatarStyle)
             onUpdateKid(
                 kid.id,
                 kidName.trim(),
                 kidBirthday,
                 kidHeroType,
-                kidColor
+                kidColor,
+                kidAvatarStyle
             )
             onClose()
         }
@@ -73,7 +78,7 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle className="text-2xl">Edit Super Kid</DialogTitle>
                 </DialogHeader>
@@ -102,6 +107,14 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
                                     <SelectItem value="super_girl">Super Girl</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Avatar Style</Label>
+                            <AvatarStylePicker
+                                value={kidAvatarStyle}
+                                onChange={setKidAvatarStyle}
+                                backgroundColor={kidColor}
+                            />
                         </div>
                         <div className="grid gap-2">
                             <Label>Avatar Color</Label>
@@ -149,11 +162,6 @@ export function EditKidModal({ isOpen, onClose, onUpdateKid, kid }: EditKidModal
                                 onMonthChange={setCurrentMonth}
                                 disabled={(date) => date > new Date()}
                                 initialFocus
-                                footer={kidBirthday && (
-                                    <p className="text-sm text-muted-foreground text-center">
-                                        Selected: {format(kidBirthday, "PPP")}
-                                    </p>
-                                )}
                             />
                         </div>
                     </div>

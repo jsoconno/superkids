@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { format, isToday, isTomorrow } from "date-fns"
+import { format, isToday, isTomorrow, isFuture } from "date-fns"
 import { SuperheroActivity } from "@/types/activities"
 import { Check, RotateCcw } from "lucide-react"
 
@@ -28,6 +28,8 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
     )
   }
 
+  const isFutureDate = isFuture(selectedDate)
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold mb-4">Activities for {getDateDisplay(selectedDate)}</h2>
@@ -45,24 +47,32 @@ export function ActivityList({ activities = [], completedActivities = [], onTogg
                     with {activity.hero.name} • {activity.duration}
                   </div>
                 </div>
-                <Button
-                  variant={isCompleted ? "outline" : "default"}
-                  onClick={() => onToggle(activity.id)}
-                  className="min-w-[140px]"
-                  size="sm"
-                >
-                  {isCompleted ? (
-                    <>
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Reset Activity
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-4 h-4 mr-2" />
-                      Complete Activity
-                    </>
+                <div className="flex flex-col items-end gap-2">
+                  <Button
+                    variant={isCompleted ? "outline" : "default"}
+                    onClick={() => onToggle(activity.id)}
+                    className="min-w-[140px]"
+                    size="sm"
+                    disabled={isFutureDate}
+                  >
+                    {isCompleted ? (
+                      <>
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Reset Activity
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Complete Activity
+                      </>
+                    )}
+                  </Button>
+                  {isFutureDate && (
+                    <p className="text-xs text-muted-foreground">
+                      Activities can only be completed on or after their scheduled date
+                    </p>
                   )}
-                </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">

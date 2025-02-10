@@ -1,15 +1,16 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect } from "react"
-import { Kid, HeroType } from "@/types/kids"
+import { Kid, HeroType, AvatarStyle } from "@/types/kids"
 import { AVATAR_COLORS } from "@/components/ui/color-picker"
+import { AVATAR_STYLES } from "@/components/ui/avatar-style-picker"
 
 interface KidsContextType {
     kids: Kid[]
-    addKid: (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
+    addKid: (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
     deleteKid: (id: number) => void
     updateKidActivities: (kidId: number, date: string, activities: number[]) => void
-    updateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => void
+    updateKid: (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => void
 }
 
 const KidsContext = createContext<KidsContextType | undefined>(undefined)
@@ -21,11 +22,18 @@ function getInitialKids(): Kid[] {
         const savedKids = window.localStorage.getItem('kids')
         if (savedKids) {
             const parsedKids = JSON.parse(savedKids)
-            return parsedKids.map((kid: any) => ({
-                ...kid,
-                birthday: new Date(kid.birthday),
-                backgroundColor: kid.backgroundColor || AVATAR_COLORS[0].value
-            }))
+            console.log('Loading kids from localStorage:', parsedKids)
+            const mappedKids = parsedKids.map((kid: any) => {
+                const mappedKid = {
+                    ...kid,
+                    birthday: new Date(kid.birthday),
+                    backgroundColor: kid.backgroundColor || AVATAR_COLORS[0].value,
+                    avatarStyle: kid.avatarStyle || AVATAR_STYLES[0].value
+                }
+                console.log('Mapped kid with avatar style:', mappedKid)
+                return mappedKid
+            })
+            return mappedKids
         }
     } catch (error) {
         console.error('Error loading kids from localStorage:', error)
@@ -48,6 +56,7 @@ export function KidsProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (isInitialized && typeof window !== 'undefined') {
             try {
+                console.log('Saving kids to localStorage:', kids)
                 window.localStorage.setItem('kids', JSON.stringify(kids))
             } catch (error) {
                 console.error('Error saving kids to localStorage:', error)
@@ -55,13 +64,14 @@ export function KidsProvider({ children }: { children: React.ReactNode }) {
         }
     }, [kids, isInitialized])
 
-    const addKid = (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => {
+    const addKid = (name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
         const newKid = {
             id: kids.length + 1,
             name,
             birthday,
             hero_type,
             backgroundColor,
+            avatarStyle,
             completedActivities: {}
         }
         setKids(prev => [...prev, newKid])
@@ -95,22 +105,27 @@ export function KidsProvider({ children }: { children: React.ReactNode }) {
         }))
     }
 
-    const updateKid = (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string) => {
-        console.log('Updating kid with data:', { id, name, backgroundColor })
-        setKids(prev => prev.map(kid => {
-            if (kid.id === id) {
-                const updatedKid = {
-                    ...kid,
-                    name,
-                    birthday,
-                    hero_type,
-                    backgroundColor
+    const updateKid = (id: number, name: string, birthday: Date, hero_type: HeroType, backgroundColor: string, avatarStyle: AvatarStyle) => {
+        console.log('Updating kid with data:', { id, name, backgroundColor, avatarStyle })
+        setKids(prev => {
+            const newKids = prev.map(kid => {
+                if (kid.id === id) {
+                    const updatedKid = {
+                        ...kid,
+                        name,
+                        birthday,
+                        hero_type,
+                        backgroundColor,
+                        avatarStyle
+                    }
+                    console.log('Updated kid object:', updatedKid)
+                    return updatedKid
                 }
-                console.log('Updated kid object:', updatedKid)
-                return updatedKid
-            }
-            return kid
-        }))
+                return kid
+            })
+            console.log('New kids array after update:', newKids)
+            return newKids
+        })
     }
 
     return (
