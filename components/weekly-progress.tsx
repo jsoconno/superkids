@@ -29,20 +29,20 @@ export function WeeklyProgress({ kid, selectedDate }: WeeklyProgressProps) {
 
     // Calculate total progress for the weekdays only
     const totalCompleted = weeklyProgress.reduce((sum, day) => sum + day.completed, 0)
-    const totalPossible = 5 // 1 activity per weekday
+    const totalPossible = weeklyProgress.filter(day => day.isWeekday).length // 5 weekdays
     const progressPercentage = (totalCompleted / totalPossible) * 100
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Today's Progress</CardTitle>
+                <CardTitle>This Week's Progress</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Progress value={progressPercentage} />
                         <p className="text-sm text-muted-foreground text-center">
-                            {totalCompleted} of {totalPossible} activities completed today
+                            {totalCompleted} of {totalPossible} activities completed this week
                         </p>
                     </div>
                     <div className="grid grid-cols-7 gap-1">
