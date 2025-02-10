@@ -122,16 +122,6 @@ export function KidsDashboard({
                     )
                 })}
             </div>
-            <div className="flex justify-center">
-                <Button
-                    onClick={onAddKid}
-                    size="lg"
-                    className="gap-2"
-                >
-                    <PlusCircle className="w-5 h-5" />
-                    Add New Super Kid
-                </Button>
-            </div>
             <EditKidModal
                 isOpen={editingKid !== null}
                 onClose={() => setEditingKid(null)}
