@@ -47,41 +47,36 @@ function KidsPageContent() {
 
     return (
         <main className="container mx-auto p-4">
-            {kids.length > 0 && (
-                <Button
-                    variant="ghost"
-                    className="mb-4"
-                    onClick={() => router.push('/dashboard')}
-                >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Activities
-                </Button>
-            )}
-
             <div className="flex flex-col items-center mb-8">
-                <h1 className="text-4xl font-bold mb-4">Welcome to Super Kids!</h1>
+                <h1 className="text-4xl font-bold mb-4">Manage Your Super Kids</h1>
                 {kids.length === 0 ? (
                     <div className="text-center max-w-2xl">
                         <p className="text-xl text-muted-foreground mb-6">
-                            Get started by adding your first super kid! Create a profile for each child to track their daily superhero activities and achievements!
+                            This is where you create profiles for your children. Each profile lets you:
                         </p>
+                        <ul className="text-left text-lg text-muted-foreground mb-8 space-y-3">
+                            <li>• Track daily superhero-themed activities</li>
+                            <li>• Monitor progress and achievements</li>
+                            <li>• Get age-appropriate activity suggestions</li>
+                            <li>• Customize their superhero appearance</li>
+                        </ul>
                         <Button
                             size="lg"
                             onClick={() => setIsModalOpen(true)}
                             className="gap-2"
                         >
                             <PlusCircle className="w-5 h-5" />
-                            Add Your First Super Kid
+                            Create Your First Super Kid
                         </Button>
                     </div>
                 ) : (
                     <div className="text-center max-w-2xl">
-                        <p className="text-muted-foreground mb-4">
-                            Select a super kid&apos;s card to view their activities, or add another super kid to your team. Each super kid gets their own set of exciting daily activities!
+                        <p className="text-lg text-muted-foreground mb-6">
+                            Here you can manage your super kids&apos; profiles and switch between their activity dashboards. Click a card to view that super kid&apos;s activities, or add another super kid to your team.
                         </p>
                         <Button
                             onClick={() => setIsModalOpen(true)}
-                            className="gap-2"
+                            className="gap-2 mb-8"
                         >
                             <PlusCircle className="w-5 h-5" />
                             Add Another Super Kid

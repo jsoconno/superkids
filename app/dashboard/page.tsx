@@ -97,10 +97,6 @@ function DashboardContent() {
                 <h1 className="text-4xl font-bold">
                     {selectedKid.name}&apos;s Activities
                 </h1>
-                <Button variant="ghost" onClick={() => router.push('/kids')}>
-                    Manage Super Kids
-                    <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
-                </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
