@@ -56,15 +56,9 @@ function KidsPageContent() {
                 <h1 className="text-4xl font-bold mb-4">Manage Your Super Kids</h1>
                 {kids.length === 0 ? (
                     <div className="text-center max-w-2xl">
-                        <p className="text-xl text-muted-foreground mb-6">
-                            This is where you create profiles for your children. Each profile lets you:
+                        <p className="text-xl text-muted-foreground mb-8">
+                            Create a profile for your child to track their daily activities, monitor progress, and get personalized superhero adventures.
                         </p>
-                        <ul className="text-left text-lg text-muted-foreground mb-8 space-y-3">
-                            <li>• Track daily superhero-themed activities</li>
-                            <li>• Monitor progress and achievements</li>
-                            <li>• Get age-appropriate activity suggestions</li>
-                            <li>• Customize their superhero appearance</li>
-                        </ul>
                         <Button
                             size="lg"
                             onClick={() => setIsModalOpen(true)}

@@ -131,3 +131,96 @@ body {
 .day-with-activities[aria-selected="true"]::after {
   background-color: hsl(var(--primary-foreground));
 }
+
+/* Rainbow border animation */
+.animate-rainbow-border {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.animate-rainbow-border::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
+  background-repeat: no-repeat;
+  background-size: 50% 50%, 50% 50%;
+  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  background-image:
+    linear-gradient(#FF5F6D, #FF5F6D),
+    linear-gradient(#FFC371, #FFC371),
+    linear-gradient(#3CD3AD, #3CD3AD),
+    linear-gradient(#4E65FF, #4E65FF);
+  animation: rotate 3s linear infinite;
+  opacity: 0.8;
+  filter: brightness(1.1) saturate(1.2);
+}
+
+.animate-rainbow-border::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 2px;
+  top: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: hsl(var(--primary));
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.animate-rainbow-border:hover::before {
+  opacity: 1;
+  filter: brightness(1.2) saturate(1.4);
+}
+
+/* Hero section utilities */
+.hero-gradient {
+  background: radial-gradient(circle at top right,
+      hsl(var(--primary) / 0.1) 0%,
+      transparent 40%),
+    radial-gradient(circle at bottom left,
+      hsl(var(--secondary) / 0.1) 0%,
+      transparent 40%),
+    linear-gradient(to bottom,
+      transparent,
+      hsl(var(--background)));
+}
+
+.text-glow {
+  text-shadow: 0 0 20px hsl(var(--primary) / 0.2);
+}
+
+.floating-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.card-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.2);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
