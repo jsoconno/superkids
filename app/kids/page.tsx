@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { KidsDashboard } from "@/components/kids-dashboard"
 import { ManageKidsModal } from "@/components/manage-kids-modal"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -9,7 +9,7 @@ import { Gender } from "@/types/kids"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, ArrowLeft } from "lucide-react"
 
-export default function KidsPage() {
+function KidsPageContent() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -114,5 +114,13 @@ export default function KidsPage() {
                 onAddKid={handleAddKid}
             />
         </main>
+    )
+}
+
+export default function KidsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <KidsPageContent />
+        </Suspense>
     )
 } 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { WeeklyCalendar } from "@/components/weekly-calendar"
 import { ActivityList } from "@/components/activity-list"
 import { ProgressChart } from "@/components/progress-chart"
@@ -13,7 +13,7 @@ import { superheroActivities } from "@/data/superhero-activities"
 import { getActivitiesForDate } from "@/utils/activity-utils"
 import { WeeklyProgress } from "@/components/weekly-progress"
 
-export default function Dashboard() {
+function DashboardContent() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -120,5 +120,13 @@ export default function Dashboard() {
                 </div>
             </div>
         </main>
+    )
+}
+
+export default function Dashboard() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DashboardContent />
+        </Suspense>
     )
 } 
